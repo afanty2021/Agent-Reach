@@ -170,6 +170,12 @@ agent-reach check-update        # 检查更新
 
 ## 变更记录
 
+### 2026-03-07 14:30:00Z - 同步 upstream（Windows 兼容性修复）
+- 合并 upstream/main (3 commits)
+- **移除 CLI 输出中的 emoji**：兼容 Windows GBK 编码
+- **移除 `isatty` 检查**：`_ensure_utf8_console` 始终生效
+- 变更文件：`cli.py` (95±97), `doctor.py` (18±18)
+
 ### 2026-03-07 09:41:20Z - 同步 upstream
 - 合并 upstream/main (7 commits)
 - 新增 WeChat 自动安装功能（install 时自动配置）
