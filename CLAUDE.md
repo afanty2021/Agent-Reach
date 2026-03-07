@@ -1,6 +1,6 @@
 # Agent Reach - AI Agent 互联网能力扩展工具
 
-> 更新时间：2026-03-05 10:47:46Z
+> 更新时间：2026-03-07 09:41:20Z
 
 ## 项目愿景
 
@@ -48,6 +48,7 @@ graph TD
 - **YouTube** (`youtube.py`) - 视频信息和字幕提取
 - **GitHub** (`github.py`) - 仓库和代码搜索
 - **RSS** (`rss.py`) - RSS/Atom 订阅解析
+- **微信公众号** (`wechat.py`) - Camoufox + miku_ai（install 时自动安装）
 
 ### Tier 1 - 需要免费 Key/MCP
 - **Twitter** (`twitter.py`) - xreach CLI + Cookie
@@ -60,16 +61,18 @@ graph TD
 - **抖音** (`douyin.py`) - mcporter + douyin-mcp-server
 - **LinkedIn** (`linkedin.py`) - linkedin-scraper-mcp
 - **Boss直聘** (`bosszhipin.py`) - mcp-bosszp
-- **微信公众号** (`wechat.py`) - Camoufox + miku_ai
 
 ## 入口与启动
 
 ### CLI 命令
 ```bash
-agent-reach install --env=auto    # 一键安装
+agent-reach install --env=auto     # 一键安装（自动安装 WeChat 工具）
 agent-reach doctor                # 检查渠道状态
 agent-reach configure twitter-cookies "xxx"  # 配置
 agent-reach uninstall             # 卸载
+agent-reach watch                 # 快速健康检查
+agent-reach check-update          # 检查更新
+agent-reach setup                 # 交互式渠道配置
 ```
 
 ### Python API
@@ -166,6 +169,16 @@ agent-reach check-update        # 检查更新
 ---
 
 ## 变更记录
+
+### 2026-03-07 09:41:20Z - 同步 upstream
+- 合并 upstream/main (7 commits)
+- 新增 WeChat 自动安装功能（install 时自动配置）
+- 新增 `watch` 命令：快速健康检查
+- 新增 `check-update` 命令：检查更新
+- 新增 `setup` 命令：交互式渠道配置
+- 微信公众号从 Tier 2 移至 Tier 0（零配置）
+- 更新 SKILL.md（324→160 行，精简）
+- 添加 Python 3.13 到测试矩阵
 
 ### 2026-03-05 10:47:46Z - 深度补捞
 - 完成 100% 文档覆盖率
