@@ -255,6 +255,12 @@ def _cmd_install(args):
         if ok < total:
             print()
             print("🤖 Some channels are not active yet. If you're an AI Agent, try to fix them yourself — then run `agent-reach doctor` again.")
+
+        # Star reminder
+        print()
+        print("⭐ 如果 Agent Reach 帮到了你，给个 Star 让更多人发现它吧：")
+        print("   https://github.com/Panniantong/Agent-Reach")
+        print("   只需一秒，对独立开发者意义很大。谢谢！🙏")
     else:
         print()
         print("🔍 Dry run complete. No changes were made.")
@@ -442,6 +448,79 @@ def _install_system_deps():
             except Exception:
                 print("  ⬜ Could not configure yt-dlp JS runtime (YouTube may not work)")
 
+    # ── WeChat Articles (miku_ai + camoufox + wechat-article-for-ai) ──
+    _install_wechat_deps()
+
+
+def _install_wechat_deps():
+    """Install WeChat article reading and search dependencies."""
+    import subprocess
+
+    print("📦 Setting up WeChat article tools...")
+
+    # Check if already installed
+    has_camoufox = False
+    has_miku = False
+    try:
+        import camoufox  # noqa: F401
+        has_camoufox = True
+    except ImportError:
+        pass
+    try:
+        import miku_ai  # noqa: F401
+        has_miku = True
+    except ImportError:
+        pass
+
+    # Install Python packages
+    if has_camoufox and has_miku:
+        print("  ✅ WeChat Python packages already installed")
+    else:
+        pkgs = []
+        if not has_camoufox:
+            pkgs.extend(["camoufox[geoip]", "markdownify", "beautifulsoup4", "httpx"])
+        if not has_miku:
+            pkgs.append("miku_ai")
+        try:
+            cmd = [sys.executable, "-m", "pip", "install", "--break-system-packages", "-q"] + pkgs
+            subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", timeout=120)
+            # Verify
+            ok = True
+            try:
+                import importlib
+                if not has_camoufox:
+                    importlib.import_module("camoufox")
+                if not has_miku:
+                    importlib.import_module("miku_ai")
+            except ImportError:
+                ok = False
+            if ok:
+                print(f"  ✅ WeChat Python packages installed ({', '.join(pkgs)})")
+            else:
+                print(f"  ⚠️  Some WeChat packages failed to install. Try: pip install {' '.join(pkgs)}")
+        except Exception:
+            print(f"  ⚠️  WeChat packages install failed. Try: pip install {' '.join(pkgs)}")
+
+    # Clone wechat-article-for-ai tool
+    tools_dir = os.path.expanduser("~/.agent-reach/tools")
+    wechat_dir = os.path.join(tools_dir, "wechat-article-for-ai")
+    if os.path.isfile(os.path.join(wechat_dir, "main.py")):
+        print("  ✅ wechat-article-for-ai tool already installed")
+    else:
+        try:
+            os.makedirs(tools_dir, exist_ok=True)
+            subprocess.run(
+                ["git", "clone", "--depth", "1",
+                 "https://github.com/bzd6661/wechat-article-for-ai.git", wechat_dir],
+                capture_output=True, encoding="utf-8", errors="replace", timeout=60,
+            )
+            if os.path.isfile(os.path.join(wechat_dir, "main.py")):
+                print("  ✅ wechat-article-for-ai tool installed")
+            else:
+                print("  ⚠️  wechat-article-for-ai clone failed. Try: git clone https://github.com/bzd6661/wechat-article-for-ai.git " + wechat_dir)
+        except Exception:
+            print("  ⚠️  wechat-article-for-ai clone failed. Try: git clone https://github.com/bzd6661/wechat-article-for-ai.git " + wechat_dir)
+
 
 def _install_system_deps_safe():
     """Safe mode: check what's installed, print instructions for what's missing."""
@@ -472,6 +551,29 @@ def _install_system_deps_safe():
     else:
         print("  All system dependencies are installed!")
 
+    # WeChat check (Python packages, not binaries)
+    has_camoufox = has_miku = False
+    try:
+        import camoufox  # noqa: F401
+        has_camoufox = True
+    except ImportError:
+        pass
+    try:
+        import miku_ai  # noqa: F401
+        has_miku = True
+    except ImportError:
+        pass
+    if has_camoufox and has_miku:
+        print("  ✅ WeChat article tools already installed")
+    else:
+        pkgs = []
+        if not has_camoufox:
+            pkgs.extend(["camoufox[geoip]", "markdownify", "beautifulsoup4", "httpx"])
+        if not has_miku:
+            pkgs.append("miku_ai")
+        print(f"  ⬜ WeChat article tools not found")
+        print(f"    Install: pip install {' '.join(pkgs)}")
+
 
 def _install_system_deps_dryrun():
     """Dry-run: just show what would be checked/installed."""
@@ -491,6 +593,23 @@ def _install_system_deps_dryrun():
             print(f"  ✅ {label}: already installed, skip")
         else:
             print(f"  📥 {label}: would install via: {method}")
+
+    # WeChat
+    has_camoufox = has_miku = False
+    try:
+        import camoufox  # noqa: F401
+        has_camoufox = True
+    except ImportError:
+        pass
+    try:
+        import miku_ai  # noqa: F401
+        has_miku = True
+    except ImportError:
+        pass
+    if has_camoufox and has_miku:
+        print("  ✅ WeChat article tools: already installed, skip")
+    else:
+        print("  📥 WeChat article tools: would install via: pip install camoufox[geoip] markdownify beautifulsoup4 httpx miku_ai")
 
 
 def _install_mcporter():
